@@ -1,8 +1,9 @@
-package fr.brangers.SwtdrChat;
+package fr.brangers.rpchat;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
+import fr.brangers.rpchat.event.EventInit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,11 +15,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 public class Main extends JavaPlugin {
+
+	public static Main instance;
 	public static ArrayList<UUID> localChat = new ArrayList<>();
 	public static ArrayList<UUID> GlobalChat = new ArrayList<>();
 	@Override
 	public void onEnable() {
-		getServer().getPluginManager().registerEvents(new MyListener(this), this);
+		instance = this;
+		EventInit.init();
 		for (Player all : Bukkit.getOnlinePlayers()) {
           localChat.add(all.getUniqueId());
           continue;
