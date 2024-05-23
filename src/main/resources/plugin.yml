@@ -2,3 +2,8 @@ name: RolePlayChat
 main: fr.brangers.rpchat.Main
 version: 2.0
 api-version: 1.19
+commands:
+  rp:
+    description: RolePlayChat command
+    usage: /<command> on|off
+    permission: rpchat.rp

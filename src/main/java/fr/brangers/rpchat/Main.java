@@ -1,8 +1,10 @@
 package fr.brangers.rpchat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
+import fr.brangers.rpchat.commands.CommandInit;
 import fr.brangers.rpchat.event.EventInit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,10 +21,14 @@ public class Main extends JavaPlugin {
 	public static Main instance;
 	public static ArrayList<UUID> localChat = new ArrayList<>();
 	public static ArrayList<UUID> GlobalChat = new ArrayList<>();
+
+	public static HashMap<UUID, Boolean> isRP = new HashMap<>();
+
 	@Override
 	public void onEnable() {
 		instance = this;
 		EventInit.init();
+		CommandInit.init();
 		for (Player all : Bukkit.getOnlinePlayers()) {
           localChat.add(all.getUniqueId());
           continue;

@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ public class ChatListener implements Listener {
 
     private HashMap<Character, Chat> configChat = new HashMap<>();
     private Chat globalChat;
+    private Chat rpChatMode;
 
     public ChatListener (Main main) {
         this.main = main;
@@ -32,6 +34,7 @@ public class ChatListener implements Listener {
         configChat.put(':', new Chat("\\:", ChatColor.LIGHT_PURPLE + "[GENERAL] %1$s " + ChatColor.WHITE + "%2$s", 20, true));
         configChat.put('(', new Chat("\\(", ChatColor.GRAY + "[HRP] %1$s " + ChatColor.GRAY + "%2$s", 20, false));
         globalChat = new Chat("", "%1$s dit: %2$s", 20, false);
+        rpChatMode = new Chat("", ChatColor.LIGHT_PURPLE + "[GENERAL] %1$s " + ChatColor.WHITE + "%2$s", 20, true);
     }
     @EventHandler
     public void onPlayerJoined(PlayerJoinEvent event) {
@@ -39,14 +42,25 @@ public class ChatListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        main.localChat.remove(event.getPlayer().getUniqueId());
+        main.isRP.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
     public void onPlayerJoin(AsyncPlayerChatEvent event)
     {
         Player p = event.getPlayer();
+        main.isRP.putIfAbsent(p.getUniqueId(), false);
         Set<Player> recipients = event.getRecipients();
         int mode = 0;
         Chat chat = null;
         if (Main.localChat.contains(p.getUniqueId()))
-            chat = configChat.get(event.getMessage().charAt(0));
+            if (main.isRP.get(p.getUniqueId()) == false)
+                chat = rpChatMode;
+            else
+                chat = configChat.get(event.getMessage().charAt(0));
+
             if (chat == null) {
                 Chat.PlayerSendMessage(event, globalChat, p, recipients);
             } else {
